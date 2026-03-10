@@ -643,12 +643,18 @@ export async function applyPendingMigrations(url: string): Promise<void> {
   if (initialState.status === "upToDate") return;
 
   const sql = postgres(url, { max: 1 });
+  let migrateError: unknown = null;
 
   try {
     const db = drizzlePg(sql);
     await migratePg(db, { migrationsFolder: MIGRATIONS_FOLDER });
+  } catch (err) {
+    migrateError = err;
   } finally {
     await sql.end();
+  }
+  if (migrateError) {
+    console.warn("[paperclip/db] Drizzle migrate failed; attempting manual migration fallback");
   }
 
   let state = await inspectMigrations(url);
