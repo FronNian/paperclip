@@ -33,6 +33,7 @@ const env = {
 };
 if (mode === "watch") {
   env.PAPERCLIP_MIGRATION_PROMPT = "never";
+  env.PAPERCLIP_MIGRATION_AUTO_APPLY = "true";
 }
 
 if (tailscaleAuth) {
@@ -56,6 +57,10 @@ const child = spawn(
 child.on("exit", (code, signal) => {
   if (signal) {
     process.kill(process.pid, signal);
+    return;
+  }
+  if (code === 3221225786) {
+    process.exit(0);
     return;
   }
   process.exit(code ?? 0);

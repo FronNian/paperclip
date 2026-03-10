@@ -145,28 +145,55 @@ export async function createApp(
   }
 
   if (opts.uiMode === "vite-dev") {
-    const uiRoot = path.resolve(__dirname, "../../ui");
-    const { createServer: createViteServer } = await import("vite");
-    const vite = await createViteServer({
-      root: uiRoot,
-      appType: "spa",
-      server: {
-        middlewareMode: true,
-        allowedHosts: privateHostnameGateEnabled ? Array.from(privateHostnameAllowSet) : undefined,
-      },
-    });
+    try {
+      const uiRoot = path.resolve(__dirname, "../../ui");
+      const { createServer: createViteServer } = await import("vite");
+      const vite = await createViteServer({
+        root: uiRoot,
+        appType: "spa",
+        server: {
+          middlewareMode: true,
+          allowedHosts: privateHostnameGateEnabled ? Array.from(privateHostnameAllowSet) : undefined,
+        },
+      });
 
-    app.use(vite.middlewares);
-    app.get(/.*/, async (req, res, next) => {
-      try {
-        const templatePath = path.resolve(uiRoot, "index.html");
-        const template = fs.readFileSync(templatePath, "utf-8");
-        const html = await vite.transformIndexHtml(req.originalUrl, template);
-        res.status(200).set({ "Content-Type": "text/html" }).end(html);
-      } catch (err) {
-        next(err);
-      }
-    });
+      app.use(vite.middlewares);
+      app.get(/.*/, async (req, res, next) => {
+        try {
+          const templatePath = path.resolve(uiRoot, "index.html");
+          const template = fs.readFileSync(templatePath, "utf-8");
+          const html = await vite.transformIndexHtml(req.originalUrl, template);
+          res.status(200).set({ "Content-Type": "text/html" }).end(html);
+        } catch (err) {
+          next(err);
+        }
+      });
+    } catch (err) {
+      console.error(
+        "[paperclip] Failed to start Vite dev middleware; running in API-only mode. " +
+          "If this is a fresh checkout, run: pnpm install",
+      );
+      console.error(err);
+      app.get(/.*/, (_req, res) => {
+        res
+          .status(503)
+          .set("Content-Type", "text/html")
+          .end(
+            [
+              "<!doctype html>",
+              "<html>",
+              "<head><meta charset=\"utf-8\" /><title>Paperclip UI unavailable</title></head>",
+              "<body style=\"font-family: ui-sans-serif, system-ui; padding: 24px;\">",
+              "<h1 style=\"margin: 0 0 12px;\">Paperclip UI unavailable</h1>",
+              "<p style=\"margin: 0 0 12px;\">The API server is running, but the UI dev middleware failed to start.</p>",
+              "<pre style=\"background:#111827; color:#e5e7eb; padding:12px; border-radius:8px; overflow:auto;\">pnpm install</pre>",
+              "<p style=\"margin: 12px 0 0;\">Then restart <code>pnpm dev</code>.</p>",
+              "</body>",
+              "</html>",
+            ].join(""),
+          );
+      });
+    }
   }
 
   app.use(errorHandler);
