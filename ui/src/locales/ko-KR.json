@@ -177,6 +177,8 @@
       "opencode_local": "오픈코드",
       "pi_local": "파이",
       "cursor": "커서",
+      "trae": "Trae",
+      "trae_cn": "Trae CN",
       "openclaw_gateway": "오픈클로 게이트웨이"
     },
     "desc": {
@@ -185,6 +187,8 @@
       "opencode_local": "로컬 다중 공급자 에이전트",
       "pi_local": "로컬 Pi 에이전트",
       "cursor": "로컬 커서 에이전트",
+      "trae": "로컬 Trae CLI 에이전트",
+      "trae_cn": "로컬 Trae CN CLI 에이전트",
       "openclaw_gateway": "게이트웨이 프로토콜을 통해 OpenClaw 호출"
     }
   },

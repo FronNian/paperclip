@@ -31,6 +31,8 @@ const SUPPORTED_ADVANCED_ADAPTER_TYPES = new Set<CreateConfigValues["adapterType
   "opencode_local",
   "pi_local",
   "cursor",
+  "trae",
+  "trae_cn",
   "openclaw_gateway",
 ]);
 
@@ -45,6 +47,9 @@ function createValuesForAdapterType(
       DEFAULT_CODEX_LOCAL_BYPASS_APPROVALS_AND_SANDBOX;
   } else if (adapterType === "cursor") {
     nextValues.model = DEFAULT_CURSOR_LOCAL_MODEL;
+  } else if (adapterType === "trae" || adapterType === "trae_cn") {
+    nextValues.model = "";
+    nextValues.command = "trae-cli";
   } else if (adapterType === "opencode_local") {
     nextValues.model = "";
   }

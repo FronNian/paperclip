@@ -276,7 +276,9 @@ export function AgentConfigForm(props: AgentConfigFormProps) {
     adapterType === "claude_local" ||
     adapterType === "codex_local" ||
     adapterType === "opencode_local" ||
-    adapterType === "cursor";
+    adapterType === "cursor" ||
+    adapterType === "trae" ||
+    adapterType === "trae_cn";
   const uiAdapter = useMemo(() => getUIAdapter(adapterType), [adapterType]);
 
   // Fetch adapter models for the effective adapter type
@@ -489,6 +491,9 @@ export function AgentConfigForm(props: AgentConfigFormProps) {
                       DEFAULT_CODEX_LOCAL_BYPASS_APPROVALS_AND_SANDBOX;
                   } else if (t === "cursor") {
                     nextValues.model = DEFAULT_CURSOR_LOCAL_MODEL;
+                  } else if (t === "trae" || t === "trae_cn") {
+                    nextValues.model = "";
+                    nextValues.command = "trae-cli";
                   } else if (t === "opencode_local") {
                     nextValues.model = "";
                   }
@@ -505,6 +510,8 @@ export function AgentConfigForm(props: AgentConfigFormProps) {
                           ? DEFAULT_CODEX_LOCAL_MODEL
                           : t === "cursor"
                             ? DEFAULT_CURSOR_LOCAL_MODEL
+                            : t === "trae" || t === "trae_cn"
+                              ? ""
                           : "",
                       effort: "",
                       modelReasoningEffort: "",
@@ -610,6 +617,8 @@ export function AgentConfigForm(props: AgentConfigFormProps) {
                       ? "codex"
                       : adapterType === "cursor"
                         ? "agent"
+                        : adapterType === "trae" || adapterType === "trae_cn"
+                          ? "trae-cli"
                         : adapterType === "opencode_local"
                           ? "opencode"
                           : "claude"
@@ -891,7 +900,14 @@ function AdapterEnvironmentResult({ result }: { result: AdapterEnvironmentTestRe
 
 /* ---- Internal sub-components ---- */
 
-const ENABLED_ADAPTER_TYPES = new Set(["claude_local", "codex_local", "opencode_local", "cursor"]);
+const ENABLED_ADAPTER_TYPES = new Set([
+  "claude_local",
+  "codex_local",
+  "opencode_local",
+  "cursor",
+  "trae",
+  "trae_cn",
+]);
 
 /** Display list includes all real adapter types plus UI-only coming-soon entries. */
 const ADAPTER_DISPLAY_LIST: { value: string; label: string; comingSoon: boolean }[] = [

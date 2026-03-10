@@ -54,6 +54,8 @@ type AdapterType =
   | "opencode_local"
   | "pi_local"
   | "cursor"
+  | "trae"
+  | "trae_cn"
   | "process"
   | "http"
   | "openclaw_gateway";
@@ -165,15 +167,25 @@ export function OnboardingWizard() {
     enabled: Boolean(createdCompanyId) && onboardingOpen && step === 2
   });
   const isLocalAdapter =
-    adapterType === "claude_local" || adapterType === "codex_local" || adapterType === "opencode_local" || adapterType === "cursor";
+    adapterType === "claude_local" ||
+    adapterType === "codex_local" ||
+    adapterType === "opencode_local" ||
+    adapterType === "pi_local" ||
+    adapterType === "cursor" ||
+    adapterType === "trae" ||
+    adapterType === "trae_cn";
   const effectiveAdapterCommand =
     command.trim() ||
     (adapterType === "codex_local"
       ? "codex"
       : adapterType === "cursor"
         ? "agent"
+        : adapterType === "trae" || adapterType === "trae_cn"
+          ? "trae-cli"
         : adapterType === "opencode_local"
           ? "opencode"
+          : adapterType === "pi_local"
+            ? "pi"
           : "claude");
 
   useEffect(() => {
@@ -684,6 +696,18 @@ export function OnboardingWizard() {
                           label: "Cursor",
                           icon: MousePointer2,
                           desc: "Local Cursor agent"
+                        },
+                        {
+                          value: "trae" as const,
+                          label: "Trae",
+                          icon: Terminal,
+                          desc: "Local Trae CLI agent"
+                        },
+                        {
+                          value: "trae_cn" as const,
+                          label: "Trae CN",
+                          icon: Terminal,
+                          desc: "Local Trae CN CLI agent"
                         }
                       ].map((opt) => (
                         <button
@@ -738,7 +762,9 @@ export function OnboardingWizard() {
                     adapterType === "codex_local" ||
                     adapterType === "opencode_local" ||
                     adapterType === "pi_local" ||
-                    adapterType === "cursor") && (
+                    adapterType === "cursor" ||
+                    adapterType === "trae" ||
+                    adapterType === "trae_cn") && (
                     <div className="space-y-3">
                       <div>
                         <div className="flex items-center gap-1.5 mb-1">
@@ -858,8 +884,9 @@ export function OnboardingWizard() {
                             Adapter environment check
                           </p>
                           <p className="text-[11px] text-muted-foreground">
-                            Runs a live probe that asks the adapter CLI to
-                            respond with hello.
+                            {adapterType === "trae" || adapterType === "trae_cn"
+                              ? "Runs a CLI probe to verify Trae is installed."
+                              : "Runs a live probe that asks the adapter CLI to respond with hello."}
                           </p>
                         </div>
                         <Button
@@ -910,17 +937,27 @@ export function OnboardingWizard() {
                             ? `${effectiveAdapterCommand} exec --json -`
                             : adapterType === "opencode_local"
                               ? `${effectiveAdapterCommand} run --format json "Respond with hello."`
+                            : adapterType === "trae" || adapterType === "trae_cn"
+                              ? `${effectiveAdapterCommand} show-config`
                             : `${effectiveAdapterCommand} --print - --output-format stream-json --verbose`}
                         </p>
                         <p className="text-muted-foreground">
                           Prompt:{" "}
                           <span className="font-mono">Respond with hello.</span>
                         </p>
-                        {adapterType === "cursor" || adapterType === "codex_local" || adapterType === "opencode_local" ? (
+                        {adapterType === "cursor" ||
+                        adapterType === "codex_local" ||
+                        adapterType === "opencode_local" ||
+                        adapterType === "trae" ||
+                        adapterType === "trae_cn" ? (
                           <p className="text-muted-foreground">
                             If auth fails, set{" "}
                             <span className="font-mono">
-                              {adapterType === "cursor" ? "CURSOR_API_KEY" : "OPENAI_API_KEY"}
+                              {adapterType === "cursor"
+                                ? "CURSOR_API_KEY"
+                                : adapterType === "trae" || adapterType === "trae_cn"
+                                  ? "OPENAI_API_KEY / ANTHROPIC_API_KEY / ..."
+                                  : "OPENAI_API_KEY"}
                             </span>{" "}
                             in
                             env or run{" "}
@@ -929,7 +966,9 @@ export function OnboardingWizard() {
                                 ? "agent login"
                                 : adapterType === "codex_local"
                                   ? "codex login"
-                                  : "opencode auth login"}
+                                  : adapterType === "trae" || adapterType === "trae_cn"
+                                    ? "trae-cli show-config"
+                                    : "opencode auth login"}
                             </span>.
                           </p>
                         ) : (

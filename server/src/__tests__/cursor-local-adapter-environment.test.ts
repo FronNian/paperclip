@@ -5,7 +5,9 @@ import path from "node:path";
 import { testEnvironment } from "@paperclipai/adapter-cursor-local/server";
 
 async function writeFakeAgentCommand(binDir: string, argsCapturePath: string): Promise<string> {
-  const commandPath = path.join(binDir, "agent");
+  const isWindows = process.platform === "win32";
+  const commandPath = path.join(binDir, isWindows ? "agent.cmd" : "agent");
+  const scriptPath = path.join(binDir, "agent.js");
   const script = `#!/usr/bin/env node
 const fs = require("node:fs");
 const outPath = process.env.PAPERCLIP_TEST_ARGS_PATH;
@@ -22,8 +24,14 @@ console.log(JSON.stringify({
   result: "hello",
 }));
 `;
-  await fs.writeFile(commandPath, script, "utf8");
-  await fs.chmod(commandPath, 0o755);
+  if (isWindows) {
+    await fs.writeFile(scriptPath, script, "utf8");
+    const wrapper = `@echo off\r\n"${process.execPath}" "${scriptPath}" %*\r\n`;
+    await fs.writeFile(commandPath, wrapper, "utf8");
+  } else {
+    await fs.writeFile(commandPath, script, "utf8");
+    await fs.chmod(commandPath, 0o755);
+  }
   return commandPath;
 }
 

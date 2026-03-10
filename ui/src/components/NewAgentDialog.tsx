@@ -27,6 +27,8 @@ type AdvancedAdapterType =
   | "opencode_local"
   | "pi_local"
   | "cursor"
+  | "trae"
+  | "trae_cn"
   | "openclaw_gateway";
 
 const ADVANCED_ADAPTER_OPTIONS: Array<{
@@ -67,6 +69,18 @@ const ADVANCED_ADAPTER_OPTIONS: Array<{
     label: "Cursor",
     icon: MousePointer2,
     desc: "Local Cursor agent",
+  },
+  {
+    value: "trae",
+    label: "Trae",
+    icon: Terminal,
+    desc: "Local Trae CLI agent",
+  },
+  {
+    value: "trae_cn",
+    label: "Trae CN",
+    icon: Terminal,
+    desc: "Local Trae CN CLI agent",
   },
   {
     value: "openclaw_gateway",

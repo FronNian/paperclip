@@ -177,6 +177,8 @@
       "opencode_local": "OpenCode",
       "pi_local": "Pi",
       "cursor": "Cursor",
+      "trae": "Trae",
+      "trae_cn": "Trae CN",
       "openclaw_gateway": "OpenClaw Gateway"
     },
     "desc": {
@@ -185,6 +187,8 @@
       "opencode_local": "Local multi-provider agent",
       "pi_local": "Local Pi agent",
       "cursor": "Local Cursor agent",
+      "trae": "Local Trae CLI agent",
+      "trae_cn": "Local Trae CN CLI agent",
       "openclaw_gateway": "Invoke OpenClaw via gateway protocol"
     }
   },

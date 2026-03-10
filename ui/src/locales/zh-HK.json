@@ -177,6 +177,8 @@
       "opencode_local": "開放程式碼",
       "pi_local": "圓周率",
       "cursor": "游標",
+      "trae": "Trae",
+      "trae_cn": "TraeCN",
       "openclaw_gateway": "OpenClaw 網關"
     },
     "desc": {
@@ -185,6 +187,8 @@
       "opencode_local": "本地多大型代理",
       "pi_local": "本地 Pi 代理",
       "cursor": "本地遊標代理",
+      "trae": "本地 Trae CLI 代理",
+      "trae_cn": "本地 TraeCN CLI 代理",
       "openclaw_gateway": "透過網關協定呼叫 OpenClaw"
     }
   },

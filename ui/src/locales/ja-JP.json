@@ -177,6 +177,8 @@
       "opencode_local": "オープンコード",
       "pi_local": "円周率",
       "cursor": "カーソル",
+      "trae": "Trae",
+      "trae_cn": "Trae CN",
       "openclaw_gateway": "OpenClaw ゲートウェイ"
     },
     "desc": {
@@ -185,6 +187,8 @@
       "opencode_local": "ローカルマルチプロバイダーエージェント",
       "pi_local": "ローカル Pi エージェント",
       "cursor": "ローカルカーソルエージェント",
+      "trae": "ローカル Trae CLI エージェント",
+      "trae_cn": "ローカル Trae CN CLI エージェント",
       "openclaw_gateway": "ゲートウェイプロトコル経由でOpenClawを呼び出す"
     }
   },

@@ -5,6 +5,8 @@ import path from "node:path";
 import { execute } from "@paperclipai/adapter-cursor-local/server";
 
 async function writeFakeCursorCommand(commandPath: string): Promise<void> {
+  const isWindows = process.platform === "win32";
+  const scriptPath = isWindows ? `${commandPath}.js` : commandPath;
   const script = `#!/usr/bin/env node
 const fs = require("node:fs");
 
@@ -36,7 +38,12 @@ console.log(JSON.stringify({
   result: "ok",
 }));
 `;
-  await fs.writeFile(commandPath, script, "utf8");
+  await fs.writeFile(scriptPath, script, "utf8");
+  if (isWindows) {
+    const wrapper = `@echo off\r\n"${process.execPath}" "${scriptPath}" %*\r\n`;
+    await fs.writeFile(commandPath, wrapper, "utf8");
+    return;
+  }
   await fs.chmod(commandPath, 0o755);
 }
 
@@ -50,7 +57,7 @@ describe("cursor execute", () => {
   it("injects paperclip env vars and prompt note by default", async () => {
     const root = await fs.mkdtemp(path.join(os.tmpdir(), "paperclip-cursor-execute-"));
     const workspace = path.join(root, "workspace");
-    const commandPath = path.join(root, "agent");
+    const commandPath = path.join(root, process.platform === "win32" ? "agent.cmd" : "agent");
     const capturePath = path.join(root, "capture.json");
     await fs.mkdir(workspace, { recursive: true });
     await writeFakeCursorCommand(commandPath);
@@ -125,7 +132,7 @@ describe("cursor execute", () => {
   it("passes --mode when explicitly configured", async () => {
     const root = await fs.mkdtemp(path.join(os.tmpdir(), "paperclip-cursor-execute-mode-"));
     const workspace = path.join(root, "workspace");
-    const commandPath = path.join(root, "agent");
+    const commandPath = path.join(root, process.platform === "win32" ? "agent.cmd" : "agent");
     const capturePath = path.join(root, "capture.json");
     await fs.mkdir(workspace, { recursive: true });
     await writeFakeCursorCommand(commandPath);

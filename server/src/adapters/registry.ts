@@ -47,6 +47,7 @@ import {
 } from "@paperclipai/adapter-pi-local";
 import { processAdapter } from "./process/index.js";
 import { httpAdapter } from "./http/index.js";
+import { traeAdapter, traeCnAdapter } from "./trae/index.js";
 
 const claudeLocalAdapter: ServerAdapterModule = {
   type: "claude_local",
@@ -118,6 +119,8 @@ const adaptersByType = new Map<string, ServerAdapterModule>(
     openCodeLocalAdapter,
     piLocalAdapter,
     cursorLocalAdapter,
+    traeAdapter,
+    traeCnAdapter,
     openclawGatewayAdapter,
     processAdapter,
     httpAdapter,
